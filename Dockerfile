@@ -15,6 +15,8 @@ ENV PYTHON_CMD=python3
 ENV ESTATE_DATA_DIR=/var/data
 ENV PORT=10000
 
+VOLUME ["/var/data"]
+
 EXPOSE 10000
 
 WORKDIR /app
