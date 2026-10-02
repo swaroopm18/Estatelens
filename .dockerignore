@@ -1,0 +1,7 @@
+.git
+.gitignore
+**/__pycache__/
+out/*.class
+data/marketplace.db
+*.log
+.DS_Store

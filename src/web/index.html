@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EstateLens · Real-Estate Price & Filter Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <section id="welcomeScreen" class="welcome-screen">
+  <div class="landing-only">
+    <div class="landing-brand">
+      <div class="logo large-logo">EL</div>
+      <div class="landing-brand-copy">
+        <div class="landing-name">EstateLens</div>
+        <div class="landing-tagline">Intelligent real-estate price, search & recommendation platform</div>
+      </div>
+    </div>
+
+    <div class="landing-intro">
+      <span class="landing-kicker">WHAT IS ESTATELENS?</span>
+      <h1>Search smarter. Understand the price. Connect with the right seller.</h1>
+      <p>EstateLens is a role-based real-estate platform that combines intelligent property search, price analysis, recommendations and buyer–seller communication. Choose your role to continue.</p>
+    </div>
+
+    <div class="landing-role-grid" aria-label="Choose your role">
+      <button class="landing-role-card buyer-card" id="landingBuyerRole" type="button">
+        <span class="landing-role-icon">B</span>
+        <span class="landing-role-title">Buyer</span>
+        <span class="landing-role-subtitle">Search, compare, buy or rent properties</span>
+        <span class="landing-role-action">Enter as Buyer →</span>
+      </button>
+      <button class="landing-role-card seller-card" id="landingSellerRole" type="button">
+        <span class="landing-role-icon">S</span>
+        <span class="landing-role-title">Seller</span>
+        <span class="landing-role-subtitle">Post properties, set prices and receive enquiries</span>
+        <span class="landing-role-action">Enter as Seller →</span>
+      </button>
+    </div>
+
+    <div class="landing-auth-panel hidden" id="landingAuthPanel">
+      <div class="landing-auth-heading">
+        <div>
+          <span class="landing-kicker" id="landingAuthKicker">BUYER ACCESS</span>
+          <h2 id="landingAuthTitle">Continue as Buyer</h2>
+          <p id="landingAuthText">Choose Login for an existing account or Sign In to create a new account.</p>
+        </div>
+        <button type="button" class="landing-back-btn" id="landingAuthBack">← Choose another role</button>
+      </div>
+      <div class="landing-auth-actions" id="landingAuthActions">
+        <button type="button" class="primary-btn landing-auth-btn" id="landingLoginBtn">Login</button>
+        <button type="button" class="outline-btn landing-auth-btn" id="landingSignupBtn">Sign In / Create Account</button>
+        <button type="button" class="soft-btn landing-auth-btn hidden" id="landingShowcaseBtn">Showcase Seller Account</button>
+      </div>
+      <div class="landing-auth-fields-note"><span>Required account details</span><b>Email</b><b>Password</b><small>Sign In additionally asks for basic profile/contact information.</small></div>
+    </div>
+  </div>
+</section>
+
+  <div class="shell hidden" id="appShell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="EstateLens home"><div class="logo">EL</div><div><strong>EstateLens</strong><span>Real-Estate Price & Filter Search</span></div></a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#search">Search</a><a href="#insights">Insights</a><a href="#mapSection">Map</a><a href="#compare">Compare</a>
+      </nav>
+      <div class="account-actions">
+        <button class="outline-btn compact" id="loginBtn">Buyer Login</button>
+        <button class="primary-btn compact" id="signInBtn">Buyer Sign In</button>
+        <button class="soft-btn compact seller-login-nav" id="sellerLoginBtn">Seller Login</button>
+        <button class="soft-btn compact hidden" id="buyerInboxBtn">Inbox <span id="buyerInboxBadge" class="nav-badge">0</span></button>
+        <button class="soft-btn compact hidden" id="sellerDashboardBtn">Seller Dashboard <span id="sellerBadge" class="nav-badge">0</span></button>
+        <button class="avatar-btn hidden" id="profileBtn">SW</button>
+      </div>
+    </header>
+
+    <aside class="workspace-sidebar buyer-workspace-nav hidden" id="buyerWorkspaceNav" aria-label="Buyer workspace">
+      <div class="sidebar-label">BUYER WORKSPACE</div>
+      <button class="workspace-btn active" data-workspace="overview"><span>01</span>Overview</button>
+      <button class="workspace-btn" data-workspace="search"><span>02</span>Property Search</button>
+      <button class="workspace-btn" data-workspace="shortlist"><span>03</span>Favorites & Compare</button>
+      <button class="workspace-btn" data-workspace="market"><span>04</span>Market Intelligence</button>
+      <button class="workspace-btn" data-workspace="trust"><span>05</span>Trust & Deals</button>
+      <button class="workspace-btn" data-workspace="finance"><span>06</span>Finance & Enquiry</button>
+      <button class="workspace-btn" data-workspace="r23"><span>07</span>R23 Project Lab</button>
+      <button class="workspace-btn inbox-side-btn" id="buyerSidebarInbox"><span>08</span>Inbox <b id="buyerSidebarBadge">0</b></button>
+    </aside>
+
+
+    <main id="top">
+      <section class="hero hero-main workspace-view" data-workspace-view="overview">
+        <div class="hero-copy">
+          <p class="eyebrow">JNTUK R23 · INTEGRATED REAL-ESTATE APPLICATION</p>
+          <h1>Find the right property.<br><em>Check the price before you decide.</em></h1>
+          <p class="lede">EstateLens combines buyer-preference set operations, an AVL price index, Java OOP listing classes and Python fair-price regression with a complete portal experience: accounts, favorites, compare, map view, recommendations, enquiry workflow, trends and an EMI calculator.</p>
+          <div class="hero-actions">
+            <a class="primary-btn" href="#search">Explore properties <span>↓</span></a>
+            <button class="soft-btn" id="heroSignIn">Create buyer profile</button>
+          </div>
+          <div class="hero-chips"><span>Locality ∩ Price ∩ Size</span><span>AVL indexed</span><span>Personalized score</span><span>Python fair price</span></div>
+        </div>
+        <div class="hero-side">
+          <div class="hero-card featured-hero">
+            <div class="hero-label">SMART SEARCH</div>
+            <div class="mode-switch large" id="heroMode">
+              <button data-mode="BUY" class="active">Buy</button>
+              <button data-mode="RENT">Rent</button>
+            </div>
+            <div class="quick-line"><span>Academic locality</span><b>Visakhapatnam</b></div><div class="quick-line"><span>Live city</span><b id="heroLiveCity">Coimbatore</b></div>
+            <div class="quick-line"><span>Engine</span><b>Java + AVL + Python</b></div>
+            <div class="quick-line"><span>Ranking</span><b>Preference score</b></div>
+            <button class="primary-btn full" id="heroSearch">Run smart search</button>
+          </div>
+          <div class="mini-quote"><span class="quote-mark">“</span><div><strong>Search first. Verify second.</strong><p>Use the model estimate as a decision aid, not as a guarantee of market value.</p></div></div>
+        </div>
+      </section>
+
+      <section class="stats workspace-view" id="stats" data-workspace-view="overview"></section>
+
+      <section class="panel dashboard-intro workspace-view" data-workspace-view="overview">
+        <div class="panel-head"><div><p class="kicker">DASHBOARD GUIDE</p><h2>How EstateLens works</h2><p class="muted">The dashboard is the starting point after login. Each sidebar section opens one focused part of the project instead of showing everything at once.</p></div><span class="badge dark">ROLE-BASED</span></div>
+        <div class="dashboard-guide-grid">
+          <article><span class="guide-no">01</span><strong>Search & Filter</strong><p>Locality, price, size, amenity and property type are combined to find suitable properties.</p></article>
+          <article><span class="guide-no">02</span><strong>Analyze Price</strong><p>AVL range search and Python fair-price estimation help the buyer understand the listing.</p></article>
+          <article><span class="guide-no">03</span><strong>Connect</strong><p>A buyer can send an enquiry to the seller and continue the conversation in the inbox.</p></article>
+          <article><span class="guide-no">04</span><strong>R23 Concepts</strong><p>DMGT, ADSA, OOPJ and Python are mapped to the actual project implementation for review.</p></article>
+        </div>
+      </section>
+
+      <section class="subjects panel workspace-view dashboard-subjects" data-workspace-view="overview">
+        <div class="panel-head"><div><p class="kicker">PROJECT SUBJECTS</p><h2>What is implemented from the JNTUK R23 subjects</h2></div><span class="badge">DMGT · ADSA · OOPJ · PYTHON</span></div>
+        <div class="dashboard-subject-grid">
+          <article><b>DMGT</b><span>Set intersection for locality, price, size and amenity preferences.</span></article>
+          <article><b>ADSA</b><span>AVL tree indexing for structured price-range search and algorithm analysis.</span></article>
+          <article><b>OOPJ / OOPS</b><span>Encapsulation, inheritance, abstraction and polymorphism through Java listing classes.</span></article>
+          <article><b>Java</b><span>HTTP server, authentication, APIs, persistence and marketplace workflow.</span></article>
+          <article><b>Python</b><span>CSV processing, feature preparation, regression and fair-price estimation.</span></article>
+          <article><b>Listing Architecture</b><span>Property entities connect seller publishing, buyer filtering, comparison and enquiry flow.</span></article>
+        </div>
+      </section>
+
+      <section class="panel live-market-panel workspace-view" id="liveMarket" data-workspace-view="search market">
+        <div class="panel-head">
+          <div><p class="kicker">LIVE MARKET DATA</p><h2>Current listings & locality intelligence</h2></div>
+          <div class="live-status-pill" id="liveStatusPill"><span class="live-dot"></span><span id="liveStatusText">Checking live source…</span></div>
+        </div>
+        <div class="live-market-grid">
+          <div class="live-source-card">
+            <div class="live-card-label">SOURCE</div>
+            <strong id="liveProviderName">AVnester</strong>
+            <span id="liveSourceMeta">Live property feed · Coimbatore</span>
+            <label class="live-city-label">Live market city<select id="liveCity"></select></label>
+            <div class="live-card-actions"><button class="soft-btn compact" id="refreshLive">Refresh live data</button><a class="soft-btn compact" id="liveProviderLink" href="https://developers.avnester.com/" target="_blank" rel="noreferrer">Source docs ↗</a><a class="soft-btn compact" id="reraLink" href="https://rera.ap.gov.in/RERA/Views/Project.aspx" target="_blank" rel="noreferrer">AP RERA registry ↗</a></div>
+          </div>
+          <div class="live-source-card">
+            <div class="live-card-label">MARKET SNAPSHOT</div>
+            <div class="live-metrics"><div><span>Avg price / sqft</span><strong id="livePpsf">—</strong></div><div><span>Avg price</span><strong id="liveAvgPrice">—</strong></div><div><span>1Y growth</span><strong id="liveGrowth">—</strong></div><div><span>Supply</span><strong id="liveSupply">—</strong></div></div>
+            <small id="liveFreshness" class="muted">Waiting for live locality insight…</small>
+          </div>
+          <div class="live-source-card live-mode-card">
+            <div class="live-card-label">SEARCH MODE</div>
+            <div class="mode-switch" id="dataModeSwitch">
+              <button data-data-mode="LIVE">Live market</button>
+              <button data-data-mode="ACADEMIC" class="active">Academic dataset</button>
+            </div>
+            <p id="liveModeNote" class="muted">Live mode queries the current external property feed for the selected covered city. Academic mode keeps the JNTUK AVL + set-operation dataset available for review.</p>
+          </div>
+        </div>
+        <div class="live-disclaimer">Live listing fields are shown with the provider's attribution and hand-off links. The current provider documents marketplace coverage for selected South-Indian cities, with a maximum of 20 listings returned per search request. Visakhapatnam remains available in the academic dataset and through the official AP RERA registry link for regulatory verification.
+        </div>
+      </section>
+
+      <section class="search-layout workspace-view" id="search" data-workspace-view="search">
+        <aside class="panel filter-panel sticky-panel">
+          <div class="panel-head"><div><p class="kicker">SMART SEARCH</p><h2>Buyer / renter preferences</h2></div><span class="badge" id="searchBadge">BUY</span></div>
+          <p class="muted">The core JNTUK processing remains visible: Java builds sets for locality, price, size and amenities, then intersects them with the AVL price-range result.</p>
+
+          <div class="mode-switch" id="purposeSwitch">
+            <button data-mode="BUY" class="active">Buy property</button>
+            <button data-mode="RENT">Rent property</button>
+          </div>
+
+          <div class="form-grid">
+            <label>Locality<select id="locality"><option>All</option></select></label>
+            <label>Property type<select id="propertyType"><option>All</option><option>Apartment</option><option>Villa</option><option>Commercial</option></select></label>
+            <label>Amenity<select id="amenity"><option>All</option></select></label>
+            <label>Bedrooms<select id="bedrooms"><option value="0">Any</option><option value="1">1 BHK</option><option value="2">2 BHK</option><option value="3">3 BHK</option><option value="4">4+ BHK</option></select></label>
+            <label>Min price <input id="minPrice" type="number" step="100000" value="3500000" /></label>
+            <label>Max price <input id="maxPrice" type="number" step="100000" value="20000000" /></label>
+            <label>Min size (sq ft) <input id="minSize" type="number" step="50" value="600" /></label>
+            <label>Max size (sq ft) <input id="maxSize" type="number" step="50" value="4000" /></label>
+          </div>
+
+          <div class="preference-box">
+            <div><span class="kicker small-kicker">PERSONALIZED RANKING</span><p>Use your saved profile to rank matches instead of simply sorting by price.</p></div>
+            <button class="toggle-switch active" id="personalizeToggle" aria-label="Toggle personalized ranking"><span></span></button>
+          </div>
+
+          <button class="primary-btn full" id="searchBtn">Run property search <span>↗</span></button>
+          <div class="set-flow"><div>Locality set</div><b>∩</b><div>AVL price range</div><b>∩</b><div>Size set</div><b>∩</b><div>Matches</div></div>
+          <div class="note" id="searchSourceNote">Live mode uses the current external feed. Academic mode keeps the original sale values and clearly labelled monthly academic reference rentals.</div>
+        </aside>
+
+        <section class="results-column">
+          <div class="results-toolbar">
+            <div><p class="kicker">SEARCH RESULTS</p><h2>Properties for your current criteria</h2><div id="resultCount" class="count">—</div></div>
+            <div class="sort-wrap"><label>Sort <select id="sortBy"><option value="recommended">Recommended</option><option value="priceAsc">Price: low to high</option><option value="priceDesc">Price: high to low</option><option value="sizeDesc">Largest first</option></select></label></div>
+          </div>
+          <div id="results" class="cards"></div>
+
+          <div class="compare-bar hidden" id="compareBar">
+            <div><strong id="compareCount">0</strong> selected for comparison</div>
+            <div class="compare-actions"><button class="soft-btn" id="clearCompare">Clear</button><button class="primary-btn" id="openCompare">Compare properties</button></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="market-intelligence-shell workspace-view" data-workspace-view="market">
+        <section class="panel market-command-panel" id="insights">
+          <div class="panel-head"><div><p class="kicker">VALUE INTELLIGENCE</p><h2>Turn selected property data into a buying decision</h2><p class="muted">The market layer answers three questions for the properties you are reviewing: Is the price reasonable? Which property fits your profile best? What does the locality context say? When you compare properties, this panel narrows to those selected properties.</p></div><span class="badge dark">PYTHON + PROFILE + MARKET</span></div>
+          <div class="market-kpi-grid">
+            <article><span>Current matches</span><strong id="marketMatchCount">—</strong><small id="marketMatchCaption">Run a search to populate</small></article>
+            <article><span>Average asking price</span><strong id="marketAvgAsk">—</strong><small id="marketAvgAskCaption">Focused property set</small></article>
+            <article><span>Estimated value gap</span><strong id="marketValueGap">—</strong><small id="marketValueGapCaption">BUY listings with model estimates</small></article>
+            <article><span>Top recommendation</span><strong id="marketTopMatch">—</strong><small id="marketTopMatchCaption">Based on your saved profile</small></article>
+          </div>
+          <div class="market-insight-grid">
+            <article class="market-callout"><div class="insight-icon">₹</div><div><b>Fair-price lens</b><p id="marketFairPriceText">The Python model compares the asking price with an area/locality/amenity-based estimate.</p></div></article>
+            <article class="market-callout"><div class="insight-icon">★</div><div><b>Why this property?</b><p id="marketRecommendationText">Run a search to see the strongest preference matches and the reasons behind them.</p></div></article>
+            <article class="market-callout"><div class="insight-icon">↕</div><div><b>Market direction</b><p id="marketDirectionText">The locality trend gives directional context for the current property set. Use it to understand movement, not to predict a guaranteed future price.</p></div></article>
+          </div>
+          <div class="market-action-row"><button class="secondary" id="refreshMarketIntel">Refresh market intelligence</button><button class="secondary" id="retrainBtn">Re-run Python estimator</button><button class="soft-btn compact" id="marketFitMap">Fit results on map</button><button class="soft-btn compact" id="marketResetMap">Reset map</button><span id="retrainMsg" class="inline-msg"></span></div>
+        </section>
+
+        <section class="feature-grid market-map-row">
+          <section class="panel" id="mapSection">
+            <div class="panel-head"><div><p class="kicker">MAP INTELLIGENCE</p><h2>See where your selected matches are concentrated</h2></div><span class="badge">OPENSTREETMAP</span></div>
+            <div class="map-summary-strip"><div><span>Localities in result</span><strong id="marketLocalityCount">—</strong></div><div><span>Properties on map</span><strong id="marketMapCount">—</strong></div><div><span>Selected locality / focus</span><strong id="marketSelectedLocality">—</strong></div></div>
+            <div class="map-wrap"><div id="map"></div><div class="map-fallback" id="mapFallback">Map tiles need internet access. The locality names and coordinates remain available in the property details.</div></div>
+            <div class="map-legend"><span><i class="legend-dot result"></i>Current result locality</span><span><i class="legend-dot ref"></i>Locality reference</span><small>Pins are locality-level reference points, not exact property addresses.</small></div>
+          </section>
+
+          <section class="panel market-readout-panel">
+            <div class="panel-head"><div><p class="kicker">BUYER READOUT</p><h2>What the numbers mean</h2></div><span class="badge">DECISION AID</span></div><div class="analysis-context"><span id="marketSelectionContext">No comparison set selected · Market Intelligence is using the current search results.</span><small id="marketSelectedTop">None</small></div>
+            <div class="readout-purpose-grid"><article><b>1. Price</b><span>Is the asking price reasonable?</span></article><article><b>2. Fit</b><span>Which visible property matches me best?</span></article><article><b>3. Market</b><span>Where are the matching properties and how is the locality moving?</span></article></div><div class="readout-block"><span>Price position</span><strong id="marketPricePosition">—</strong><p id="marketPricePositionText">—</p></div>
+            <div class="readout-block"><span>Preference fit</span><strong id="marketPreferenceFit">—</strong><p id="marketPreferenceFitText">—</p></div>
+            <div class="readout-block"><span>Locality signal</span><strong id="marketLocalitySignal">—</strong><p id="marketLocalitySignalText">—</p></div>
+            <div class="readout-foot">Use these indicators together with the property details, seller information and the Python estimate. They are decision-support signals, not guarantees.</div>
+          </section>
+        </section>
+
+        <section class="panel market-trend-panel">
+          <div class="panel-head"><div><p class="kicker">PRICE TRENDS</p><h2>Understand the direction before you decide</h2><p class="muted" id="trendDescription">Select a locality to compare the trend index and the current market context.</p></div><span class="badge" id="trendBadge">LIVE / FALLBACK</span></div>
+          <div class="trend-dashboard-grid">
+            <div>
+              <div class="trend-toolbar"><label>Locality<select id="trendLocality"></select></label><div class="trend-stat"><span>12-period change</span><strong id="trendChange">—</strong></div><div class="trend-stat"><span>Latest index</span><strong id="trendLatest">—</strong></div><div class="trend-stat"><span>Direction</span><strong id="trendDirection">—</strong></div></div>
+              <div class="chart-wrap"><svg id="trendChart" viewBox="0 0 720 270" role="img" aria-label="Locality price trend"></svg></div>
+            </div>
+            <aside class="trend-explain"><b>How to read this</b><div><span class="trend-bullet up">↗</span><p><strong>Rising</strong><small>the selected index has moved upward across the displayed periods.</small></p></div><div><span class="trend-bullet flat">→</span><p><strong>Stable</strong><small>movement is relatively flat across the displayed periods.</small></p></div><div><span class="trend-bullet info">i</span><p><strong>Live / fallback</strong><small>the badge tells you whether the provider or academic index supplied the trend.</small></p></div></aside>
+          </div>
+        </section>
+      </section>
+
+      <section class="workspace grid2 workspace-view" data-workspace-view="r23">
+        <section class="panel">
+          <div class="panel-head"><div><p class="kicker">ADSA · U1</p><h2>AVL price index</h2></div><span class="badge">BALANCED TREE</span></div>
+          <p class="muted">Sale and rental prices are indexed separately so one-time sale values are never mixed with monthly rent values. The sale tree remains the academic ADSA core.</p>
+          <div class="avl-facts"><div><span id="avlNodes">—</span><small>sale AVL nodes</small></div><div><span id="avlHeight">—</span><small>sale tree height</small></div><div><span>O(log n)</span><small>range-search target</small></div></div>
+          <div class="tree"><span class="t t1">₹1.58Cr</span><span class="t t2">₹1.26Cr</span><span class="t t3">₹0.92Cr</span><span class="line l1"></span><span class="line l2"></span><span class="line l3"></span><span class="t t4">₹0.68Cr</span><span class="t t5">₹0.84Cr</span><span class="t t6">₹1.12Cr</span></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="kicker">OOPJ</p><h2>Listing class model</h2></div><span class="badge">POLYMORPHIC</span></div>
+          <div class="class-map"><div class="uml base"><b>Listing</b><span>id · title · locality · mode</span><span>price · area · amenities</span><span>applyEstimate()</span></div><div class="uml child"><b>ResidentialListing</b><span>Apartment / Villa</span><small>inherits Listing</small></div><div class="uml child"><b>CommercialListing</b><span>Office / Retail</span><small>inherits Listing</small></div></div>
+          <p class="muted">The abstract base captures shared property behaviour; subclasses classify listings while the portal adds a buyer/renter workflow on top.</p>
+        </section>
+      </section>
+
+      <section class="feature-grid workspace-view" id="compare" data-workspace-view="shortlist">
+        <section class="panel comparison-preview">
+          <div class="panel-head"><div><p class="kicker">COMPARE</p><h2>Keep up to 3 properties side-by-side</h2></div><div class="compare-head-actions"><button class="soft-btn compact" id="openCompare2">Open comparison</button><button class="soft-btn compact" id="refreshCompare">Refresh selection</button></div></div>
+          <div id="comparePreview" class="compare-preview-grid"><div class="empty">Select properties above to build your comparison.</div></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><div><p class="kicker">FAVORITES</p><h2>Your saved shortlist</h2></div><span class="badge" id="favoriteBadge">0 saved</span></div>
+          <div id="favoritePreview" class="favorite-preview"><div class="empty">Click the ♡ icon on a property card to save it.</div></div>
+        </section>
+      </section>
+
+
+      <section class="panel workspace-view trust-shell" data-workspace-view="trust">
+        <div class="panel-head"><div><p class="kicker">TRUST & DECISION SUPPORT</p><h2>Build confidence before you commit</h2><p class="muted">A buyer should know who is behind a listing, how complete the information is, how the asking price compares with the model estimate and whether the property appears duplicated.</p></div><div class="panel-head-actions"><button class="soft-btn compact" id="refreshTrustDeals">Refresh signals</button><span class="badge dark">BUYER PROTECTION LAYER</span></div></div>
+        <div class="trust-overview-strip"><div><span>Top result trust</span><strong id="trustOverallScore">—</strong><small id="trustOverallCaption">Run a search</small></div><div><span>Verified / review-ready</span><strong id="trustVerificationCount">—</strong><small>Current result set</small></div><div><span>Potential value</span><strong id="trustValueCount">—</strong><small>Below model estimate</small></div><div><span>Risk flags</span><strong id="trustRiskCount">—</strong><small>Duplicate / missing-data signals</small></div></div>
+        <div id="trustDecisionGrid" class="next-level-grid"><div class="empty">Run a property search to see trust, price and locality signals.</div></div>
+        <div class="trust-explainer-grid">
+          <article><b>Identity & completeness</b><p>Seller contact data, property description, price, area, amenities and location completeness are combined into the listing confidence score.</p></article>
+          <article><b>Price sanity check</b><p>The Python estimate provides a comparison point so the buyer can distinguish a potential value, an estimate-band listing or a higher asking price.</p></article>
+          <article><b>Duplicate screening</b><p>Similar locality, property type, area and price combinations are flagged for review instead of being presented as automatically safe.</p></article>
+          <article><b>Next action</b><p>Open details, request a site visit, make an offer or start a seller enquiry only after reviewing the signals above.</p></article>
+        </div>
+        <div class="panel inset commute-panel"><div class="panel-head"><div><p class="kicker">LOCALITY PROXIMITY</p><h3>Compare access to the property</h3></div><span class="badge">LOCALITY LEVEL</span></div><div class="commute-grid"><label>From locality<select id="commuteFrom"></select></label><label>To property locality<select id="commuteTo"></select></label><button class="primary-btn" id="calculateCommute">Calculate distance</button></div><div id="commuteResult" class="inline-msg"></div><div id="commuteSuggestions" class="commute-suggestions"></div><p class="map-note">This is a locality-to-locality distance aid, not a live traffic or travel-time guarantee.</p></div>
+        <div class="next-level-grid deal-panels"><div class="panel inset"><div class="panel-head"><div><p class="kicker">MY SITE VISITS</p><h3>Upcoming requests</h3></div><span class="deal-count" id="buyerVisitCount">0</span></div><div id="buyerVisitList" class="seller-list"><div class="empty actionable-empty"><b>No active site visits yet.</b><span>Open a property and choose Schedule site visit to create one.</span></div></div></div><div class="panel inset"><div class="panel-head"><div><p class="kicker">MY OFFERS</p><h3>Negotiation status</h3></div><span class="deal-count" id="buyerOfferCount">0</span></div><div id="buyerOfferList" class="seller-list"><div class="empty actionable-empty"><b>No active offers yet.</b><span>Open a BUY property and choose Make an Offer to start negotiation.</span></div></div></div></div>
+      </section><section class="panel workspace-view finance-shell" id="mortgage" data-workspace-view="finance">
+        <div class="panel-head"><div><p class="kicker">FINANCE & ENQUIRY</p><h2>Plan the purchase before you contact the seller</h2><p class="muted">This planner turns the EMI calculator into an affordability view. It is still an illustration, but it makes the buyer's assumptions explicit.</p></div><span class="badge dark">AFFORDABILITY PLANNER</span></div>
+        <div class="finance-input-grid">
+          <label>Property price <input id="loanPrice" type="number" value="9200000" step="50000" /></label>
+          <label>Down payment <input id="downPayment" type="number" value="1840000" step="50000" /></label>
+          <label>Interest rate % / year <input id="interestRate" type="number" value="8.5" step="0.1" /></label>
+          <label>Tenure (years) <input id="tenure" type="number" value="20" step="1" min="1" max="40" /></label>
+          <label>Monthly gross income <input id="grossIncome" type="number" value="80000" step="1000" /></label>
+          <label>Existing monthly EMIs <input id="existingEmi" type="number" value="5000" step="500" /></label>
+          <label>Annual property tax <input id="propertyTax" type="number" value="24000" step="1000" /></label>
+          <label>Annual insurance / maintenance <input id="propertyInsurance" type="number" value="12000" step="1000" /></label>
+        </div>
+        <div class="finance-action-row"><button class="primary-btn" id="calculateEmi">Calculate finance plan</button><button class="soft-btn" id="financeUseSelected">Use selected property</button><span id="financeMsg" class="inline-msg"></span></div>
+        <div class="finance-result-grid"><div><small>Loan amount</small><strong id="loanAmount">—</strong><span>after down payment</span></div><div><small>Monthly EMI</small><strong id="emiValue">—</strong><span>principal + interest</span></div><div><small>Total interest</small><strong id="interestValue">—</strong><span>over the selected tenure</span></div><div><small>LTV</small><strong id="ltvValue">—</strong><span>loan-to-value</span></div><div><small>Housing load</small><strong id="housingLoad">—</strong><span>EMI + recurring estimate</span></div><div><small>Upfront cash</small><strong id="upfrontCash">—</strong><span>down payment + assumed costs</span></div></div>
+        <div class="finance-health"><div><span>Affordability indicator</span><strong id="affordabilityStatus">—</strong></div><p id="affordabilityText">Enter realistic income and property assumptions to see the buyer-side affordability signal.</p></div>
+        <p class="map-note">Illustrative planning only. Actual loan approval, rate, taxes, insurance and charges depend on the lender, property and applicant.</p>
+      </section>
+
+      <section class="panel workflow-panel workspace-view finance-workflow-panel" data-workspace-view="finance">
+        <div class="panel-head"><div><p class="kicker">BUY / RENT WORKFLOW</p><h2>Move from shortlist to a real seller interaction</h2><p class="muted">These steps connect to the existing property, enquiry, site-visit and offer flows in this application.</p></div><span class="badge">LIVE WORKFLOW</span></div>
+        <div class="workflow-steps enhanced-workflow"><button type="button" data-finance-step="search"><span>01</span><b>Find & shortlist</b><small>Search, favorite or compare the property.</small></button><button type="button" data-finance-step="details"><span>02</span><b>Review evidence</b><small>Open details, trust signals, map and fair-price insight.</small></button><button type="button" data-finance-step="buy"><span>03</span><b>Choose Buy / Rent</b><small>Start the actual listing workflow from the property page.</small></button><button type="button" data-finance-step="connect"><span>04</span><b>Connect & follow up</b><small>Send an enquiry, request a site visit or make an offer.</small></button></div>
+        <div class="workflow-live-strip"><div><span>Current mode</span><strong id="financeCurrentMode">Buy</strong></div><div><span>Selected property</span><strong id="financeSelectedProperty">None selected</strong></div><div><span>Next action</span><strong id="financeNextAction">Open Property Search</strong></div><button class="soft-btn" id="financeOpenSearch">Open Property Search</button></div>
+      </section>
+
+      <section class="subjects panel workspace-view r23-deep" data-workspace-view="r23">
+        <div class="panel-head"><div><p class="kicker">JNTUK R23 · PROJECT TRACEABILITY</p><h2>How the curriculum concepts become working product features</h2><p class="muted">The supplied problem statement explicitly names DMGT, ADSA, OOPJ and Python. The supporting cards below explain the additional Java, data, web and finance concepts used to turn those academic ideas into a complete application.</p></div><span class="badge dark">REVIEW READY</span></div>
+        <div class="subject-deep-grid">
+          <article><div class="subject-no">01</div><h3>DMGT · Discrete Mathematics & Graph Theory</h3><p><b>Core idea:</b> represent buyer constraints as sets and combine them with intersection.</p><ul><li>Locality set</li><li>Price-range set from the AVL index</li><li>Size set</li><li>Optional amenity/property-type sets</li><li>Final result = intersection of active constraints</li></ul><span class="subject-note">The live search screen exposes the exact AND logic in the search flow.</span></article>
+          <article><div class="subject-no">02</div><h3>ADSA · Advanced Data Structures & Algorithm Analysis</h3><p><b>Core idea:</b> keep a balanced price index so range queries do not require a full linear scan.</p><ul><li>AVL insertion and rotations</li><li>Balance factor and height</li><li>Separate BUY and RENT indexes</li><li>Price-range traversal</li><li>Complexity target: O(log n) search on the balanced tree</li></ul><span class="subject-note">The dashboard exposes AVL node count, height and range-search behavior.</span></article>
+          <article><div class="subject-no">03</div><h3>OOPJ / OOPS · Object-Oriented Programming Through JAVA</h3><p><b>Core idea:</b> model real-estate listings and marketplace roles as reusable objects.</p><ul><li>Listing abstraction</li><li>ResidentialListing / CommercialListing inheritance</li><li>Encapsulation of property data</li><li>Polymorphic listing behavior</li><li>Role-based Buyer and Seller workflows</li></ul><span class="subject-note">The UI roles map directly to the Java object model.</span></article>
+          <article><div class="subject-no">04</div><h3>Java · Application & API Engineering</h3><p><b>Core idea:</b> connect the algorithms to an executable marketplace service.</p><ul><li>HTTP server and REST-style endpoints</li><li>Authentication and session handling</li><li>Search, property and inquiry APIs</li><li>Buyer–seller messaging</li><li>Persistent marketplace state</li></ul><span class="subject-note">Java is the integration layer that turns the academic algorithms into an executable product.</span></article>
+          <article><div class="subject-no">05</div><h3>Python Programming · Price Intelligence</h3><p><b>Core idea:</b> estimate a fair BUY price from listing features.</p><ul><li>CSV input/output</li><li>Area features</li><li>Locality encoding</li><li>Amenity count</li><li>Regularized multiple linear regression</li></ul><span class="subject-note">Java exports listing data → Python estimates → Java reads predictions and flags price position.</span></article>
+          <article><div class="subject-no">06</div><h3>Data Management & Persistence</h3><p><b>Project mapping:</b> store accounts, listings, inquiries, messages, site visits and offers so workflows survive page refreshes and restarts.</p><ul><li>Buyer and Seller records</li><li>Seller-owned listings</li><li>Inquiry/message threads</li><li>Favorites, offers and site visits</li><li>Persistent file-backed marketplace state</li></ul><span class="subject-note">This is a supporting implementation area, not an additional claim about the supplied problem statement.</span></article>
+          <article><div class="subject-no">07</div><h3>Web & API Integration</h3><p><b>Project mapping:</b> the browser is a role-based product UI over the Java service.</p><ul><li>Role-first authentication</li><li>Buyer workspace and Seller workspace</li><li>Async search and live market calls</li><li>Map and chart components</li><li>Form-driven marketplace actions</li></ul><span class="subject-note">Each action can be traced from button → API → stored result → visible state.</span></article>
+          <article><div class="subject-no">08</div><h3>Finance & Decision Support</h3><p><b>Project mapping:</b> use price estimates and affordability calculations to help a buyer make an informed decision.</p><ul><li>EMI planning</li><li>Loan-to-value view</li><li>Housing load estimate</li><li>Price-vs-estimate signals</li><li>Transparent recommendation factors</li></ul><span class="subject-note">Supporting application capability; not presented as an official course requirement.</span></article>
+          <article><div class="subject-no">09</div><h3>Listing Architecture · Real-World Marketplace Model</h3><p><b>Project mapping:</b> connect the academic search engine to a realistic property lifecycle.</p><ul><li>Seller publishes listing</li><li>Buyer discovers and compares</li><li>Buyer sends enquiry</li><li>Seller replies or proposes a site visit/offer</li><li>Buyer tracks the conversation</li></ul><span class="subject-note">This is the project's real-world extension beyond the original buyer-preference statement.</span></article>
+        </div>
+        <div class="r23-trace-strip"><div><b>Academic core</b><span>DMGT + ADSA + OOPJ + Python</span></div><div><b>Implementation</b><span>Java + persistence + web/API integration</span></div><div><b>Real-world extension</b><span>Buyer + Seller + recommendation + finance + communication</span></div></div>
+      </section>
+
+      <section class="pipeline panel workspace-view" data-workspace-view="r23">
+        <div><p class="kicker">EXACT PROJECT PROCESSING</p><h2>From buyer preference to price insight</h2></div>
+        <div class="steps"><div><span>01</span><b>Load</b><small>Java creates typed listing objects.</small></div><div><span>02</span><b>Index</b><small>Buy and rent prices go into separate AVL trees.</small></div><div><span>03</span><b>Intersect</b><small>Locality AND price AND size AND optional amenity sets.</small></div><div><span>04</span><b>Export</b><small>Java writes listing data to CSV.</small></div><div><span>05</span><b>Regress</b><small>Python estimates BUY fair price from area/locality/amenities.</small></div><div><span>06</span><b>Flag</b><small>Java marks above / below / near estimate.</small></div></div>
+      </section>
+    </main>
+
+    <footer>EstateLens · Academic implementation · Java + AVL + Set Operations + Python Regression · Sample data is clearly labelled where illustrative</footer>
+  </div>
+
+  <!-- Property detail page -->
+  <div class="overlay page-overlay hidden" id="propertyOverlay">
+    <div class="page-shell">
+      <div class="page-toolbar"><button class="icon-btn" id="closeProperty">← Back to results</button><div class="page-toolbar-actions"><button class="soft-btn" id="favoriteDetail">♡ Favorite</button><button class="soft-btn hidden" id="offerDetail">Make an Offer</button><button class="primary-btn" id="workflowDetail">Buy / Contact Seller</button></div></div>
+      <div id="propertyDetail" class="property-page"></div>
+    </div>
+  </div>
+
+  <!-- Compare -->
+  <div class="overlay hidden" id="compareOverlay"><div class="modal wide"><div class="modal-head"><div><p class="kicker">COMPARE</p><h2>Side-by-side property comparison</h2></div><button class="icon-btn" data-close="compareOverlay">×</button></div><div id="compareContent"></div></div></div>
+
+  <!-- Login -->
+  <div class="overlay hidden" id="roleAuthOverlay">
+    <div class="modal role-auth-modal">
+      <button class="icon-btn role-auth-close" id="roleAuthClose">×</button>
+      <p class="kicker" id="roleAuthKicker">ACCOUNT</p>
+      <h2 id="roleAuthTitle">Choose access</h2>
+      <p class="muted" id="roleAuthText">Use Login for an existing account or Sign Up to create a new account.</p>
+      <div class="role-auth-actions">
+        <button class="primary-btn full" id="roleLoginBtn">Login</button>
+        <button class="outline-btn full" id="roleSignupBtn">Sign In / Create Account</button>
+        <button class="soft-btn full hidden" id="roleShowcaseBtn">Showcase Seller Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="signupOverlay">
+    <div class="modal auth-modal">
+      <div class="modal-head"><div><p class="kicker" id="signupKicker">BUYER ACCOUNT</p><h2 id="signupTitle">Create account</h2></div><button class="icon-btn" data-close="signupOverlay">×</button></div>
+      <form id="signupForm" class="auth-form">
+        <input id="signupRole" type="hidden" value="BUYER">
+        <label>Full name<input id="signupName" required placeholder="Your name"></label>
+        <label>Contact number<input id="signupPhone" required placeholder="10-digit phone number"></label>
+        <label>Email<input id="signupEmail" type="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="signupPassword" type="password" required minlength="6" placeholder="At least 6 characters"></label>
+        <label>Re-enter password<input id="signupPasswordConfirm" type="password" required minlength="6" placeholder="Re-enter your password"></label>
+        <div id="buyerSignupFields" class="signup-extra-fields">
+          <label>Preferred mode<select id="signupMode"><option value="BUY">Buy</option><option value="RENT">Rent</option></select></label>
+          <label>Preferred locality<input id="signupLocality" placeholder="MVP Colony"></label>
+          <div class="form-grid compact-grid"><label>Minimum budget<input id="signupMinBudget" type="number" min="0" placeholder="3500000"></label><label>Maximum budget<input id="signupMaxBudget" type="number" min="0" placeholder="20000000"></label></div>
+        </div>
+        <div id="sellerSignupFields" class="signup-extra-fields hidden">
+          <label>Primary locality<input id="signupSellerLocality" placeholder="MVP Colony"></label>
+          <div class="auth-hint">Seller account basics: name or agency name, contact number, email, password, re-enter password, and primary locality. The preloaded Showcase Seller Account is provided only for the academic review workflow.</div>
+        </div>
+        <button class="outline-btn full" type="button" id="signupLoginSwitch">Already have an account? Login</button><button class="primary-btn full" type="submit" id="signupSubmit">Create Account</button>
+        <div id="signupMsg" class="inline-msg"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="loginOverlay"><div class="modal auth-modal"><div class="modal-head"><div><p class="kicker">ACCOUNT</p><h2>Buyer Login</h2></div><button class="icon-btn" data-close="loginOverlay">×</button></div><form id="loginForm" class="auth-form"><label>Email<input id="loginEmail" type="email" required placeholder="you@example.com"></label><label>Password<input id="loginPassword" type="password" required placeholder="••••••••"></label><button class="primary-btn full" type="submit">Login</button><button type="button" class="outline-btn full" id="buyerSignupFromLogin">Sign In / Create Account</button><div class="auth-hint">Create a buyer account from Sign In / Create Account.</div><div id="loginMsg" class="inline-msg"></div></form></div></div>
+
+  <!-- Seller Login -->
+  <div class="overlay hidden" id="sellerLoginOverlay"><div class="modal auth-modal"><div class="modal-head"><div><p class="kicker">SELLER PORTAL</p><h2>Seller Login</h2></div><button class="icon-btn" data-close="sellerLoginOverlay">×</button></div><form id="sellerLoginForm" class="auth-form"><label>Email<input id="sellerLoginEmail" type="email" required placeholder="seller@example.com"></label><label>Password<input id="sellerLoginPassword" type="password" required placeholder="••••••••"></label><button class="primary-btn full" type="submit">Login as Seller</button><button type="button" class="outline-btn full" id="sellerSignupFromLogin">Create Seller Account</button><button type="button" class="soft-btn full" id="sellerShowcaseFromLogin">Open Showcase Seller Account</button><div class="auth-hint">Seller showcase account: <b>seller@estatelens.local</b> · <b>seller123</b> · Showcase shortcut uses the preloaded review seller.</div><div id="sellerLoginMsg" class="inline-msg"></div></form></div></div>
+
+  <!-- Seller Dashboard -->
+  <div class="overlay hidden" id="sellerDashboardOverlay"><div class="modal wide seller-dashboard"><div class="modal-head"><div><p class="kicker">SELLER WORKSPACE</p><h2>Manage listings & buyer inquiries</h2><p class="muted" id="sellerWelcome"></p></div><div class="page-toolbar-actions"><button class="soft-btn compact" id="sellerLogoutBtn">Seller Logout</button><button class="icon-btn" data-close="sellerDashboardOverlay">×</button></div></div>
+    <div class="seller-workspace-tabs"><button class="seller-tab-nav active" data-seller-tab="overview">Overview</button><button class="seller-tab-nav" data-seller-tab="listings">My Listings</button><button class="seller-tab-nav" data-seller-tab="add">Post Property</button><button class="seller-tab-nav" data-seller-tab="inquiries">Buyer Inquiries</button><button class="seller-tab-nav" data-seller-tab="deals">Deals & Quality</button><button class="seller-tab-nav" data-seller-tab="market">Market Data</button><button class="seller-tab-nav" data-seller-tab="account">Account</button></div>
+    <section id="sellerOverviewTab" class="seller-tab">
+      <div class="seller-overview-grid"><div class="seller-overview-card"><span>Role</span><strong>Seller</strong><small>Manage your marketplace listings</small></div><div class="seller-overview-card"><span>Listings</span><strong id="sellerListingCount">—</strong><small>Properties currently posted</small></div><div class="seller-overview-card"><span>New inquiries</span><strong id="sellerInquiryCount">—</strong><small>Unread buyer requests</small></div><div class="seller-overview-card"><span>Workflow</span><strong>Buyer → Inquiry</strong><small>Respond inside the seller inbox</small></div></div>
+      <div class="seller-showcase-banner"><div><span class="showcase-dot"></span><strong>Review Showcase Seller</strong><p>This workspace can be used without a personal seller account. The Showcase Seller Account already has buyer-visible properties across the project localities.</p></div><span class="showcase-badge">PRELOADED DATA</span></div>
+      <div class="seller-project-card"><div><p class="kicker">ABOUT ESTATELENS</p><h2>What this project does</h2><p>EstateLens helps buyers discover suitable properties and helps sellers publish and manage listings. The academic engine combines mathematical set operations, an ADSA AVL price index, OOPJ Java classes, Python fair-price estimation and a listing-to-inquiry marketplace workflow.</p></div><div class="seller-subject-mini"><span><b>DMGT</b>Set intersection for buyer preferences</span><span><b>ADSA</b>AVL price-range indexing</span><span><b>OOPJ / OOPS</b>Java inheritance & polymorphism</span><span><b>JAVA</b>Backend, APIs, authentication & persistence</span><span><b>PYTHON</b>Regression, CSV processing & price estimation</span><span><b>LISTING</b>Property model, seller publishing & buyer matching</span></div></div>
+      <div class="seller-overview-steps"><div><b>01</b><span>Create or manage a seller profile</span></div><div><b>02</b><span>Post property, price, location & amenities</span></div><div><b>03</b><span>Appear in buyer search and comparison</span></div><div><b>04</b><span>Receive buyer inquiries and notifications</span></div><div><b>05</b><span>Manage verification and listing quality signals</span></div><div><b>06</b><span>Handle site visits, offers and buyer conversations</span></div></div>
+      <div class="seller-academic-detail"><div><p class="kicker">ACADEMIC + MARKETPLACE MAPPING</p><h3>How each subject appears in the seller workflow</h3></div><div class="seller-academic-grid"><article><b>DMGT</b><span>Seller listings become property records; buyer constraints are intersected as sets during search.</span></article><article><b>ADSA</b><span>Prices are indexed in AVL trees so range searches stay structured and traceable.</span></article><article><b>OOPJ / OOPS</b><span>Listing, ResidentialListing and CommercialListing model the property hierarchy.</span></article><article><b>Java</b><span>HTTP endpoints, authentication, seller APIs, inquiry APIs and persistent marketplace state are implemented in Java.</span></article><article><b>Python</b><span>The estimator reads Java-exported listing data and produces fair-price predictions for BUY listings.</span></article><article><b>Listing Architecture</b><span>Seller creates a listing → buyer discovers it → buyer sends inquiry → seller receives and replies.</span></article></div></div>
+    </section>
+    <section id="sellerListingsTab" class="seller-tab hidden"><div id="sellerListingList" class="seller-list"></div></section>
+    <section id="sellerAddTab" class="seller-tab hidden"><form id="sellerPropertyForm" class="auth-form"><input id="sellerPropertyId" type="hidden"><div class="form-grid"><label>Property title<input id="sellerTitle" required placeholder="3 BHK Premium Apartment"></label><label>Listing mode<select id="sellerMode"><option value="BUY">Buy</option><option value="RENT">Rent</option></select></label><label>Locality<input id="sellerLocality" required placeholder="MVP Colony"></label><label>Property type<select id="sellerPropertyType"><option>Apartment</option><option>Villa</option><option>Independent House</option><option>Commercial</option></select></label><label>Price<input id="sellerPrice" type="number" required min="1" placeholder="9500000"></label><label>Area (sq ft)<input id="sellerArea" type="number" required min="100" placeholder="1500"></label><label>Bedrooms<input id="sellerBedrooms" type="number" min="0" value="3"></label><label>Amenities<input id="sellerAmenities" placeholder="Parking, Security, Gym"></label><label>Location / address<input id="sellerAddress" placeholder="Locality-level address for project review"></label><label>Latitude<input id="sellerLat" type="number" step="any" placeholder="17.7428"></label><label>Longitude<input id="sellerLng" type="number" step="any" placeholder="83.3206"></label></div><label>Description<textarea id="sellerDescription" rows="4" placeholder="Describe the property, nearby facilities and seller notes."></textarea></label><div class="note">Published listings become immediately available to buyer search, comparison and enquiry workflows after they are saved by the Java backend.</div><div class="seller-form-actions"><button type="button" class="soft-btn" id="useSellerLocation">Use my current location</button><button type="button" class="soft-btn" id="cancelSellerEdit">Cancel edit</button><button type="submit" class="primary-btn">Publish property</button></div><div id="sellerPropertyMsg" class="inline-msg"></div></form></section>
+    <section id="sellerInquiriesTab" class="seller-tab hidden"><div class="inquiry-layout"><div id="sellerInquiryList" class="inquiry-list"></div><div id="sellerConversation" class="conversation-panel"><div class="empty">Select an inquiry to open the conversation.</div></div></div></section>
+    <section id="sellerDealsTab" class="seller-tab hidden"><div class="next-level-grid"><div class="panel inset"><div class="panel-head"><div><p class="kicker">OFFERS & NEGOTIATION</p><h2>Buyer offers</h2></div><span class="badge">DEAL FLOW</span></div><div id="sellerOfferList" class="seller-list"><div class="empty">No offers yet.</div></div></div><div class="panel inset"><div class="panel-head"><div><p class="kicker">SITE VISITS</p><h2>Requested visits</h2></div><span class="badge">SCHEDULING</span></div><div id="sellerVisitList" class="seller-list"><div class="empty">No site visits yet.</div></div></div></div><div class="panel inset"><div class="panel-head"><div><p class="kicker">LISTING QUALITY</p><h2>Verification & duplicate checks</h2></div><span class="badge">TRUST LAYER</span></div><div id="sellerQualityList" class="seller-list"><div class="empty">Open My Listings to load quality signals.</div></div></div></section><section id="sellerMarketTab" class="seller-tab hidden"><div class="seller-market-cards"><div class="seller-market-card"><p class="kicker">MARKET DATA</p><h3>Current market reference</h3><p class="muted">Use the live market feed for supported South-Indian cities, or use the academic dataset for the JNTUK review flow.</p><div class="seller-market-row"><label>Live city<select id="sellerMarketCity"><option>Coimbatore</option><option>Chennai</option><option>Madurai</option><option>Tiruchirappalli</option><option>Tiruppur</option><option>Erode</option><option>Tirunelveli</option><option>Vellore</option></select></label><button class="soft-btn" id="sellerRefreshMarket">Refresh</button></div><div class="live-metrics seller-market-metrics"><div><span>Avg price / sqft</span><strong id="sellerMarketPpsf">—</strong></div><div><span>Avg price</span><strong id="sellerMarketAvg">—</strong></div><div><span>1Y growth</span><strong id="sellerMarketGrowth">—</strong></div><div><span>Supply</span><strong id="sellerMarketSupply">—</strong></div></div><span id="sellerMarketStatus" class="muted">Ready</span></div></div></section>
+    <section id="sellerAccountTab" class="seller-tab hidden"><div class="seller-account-card"><div class="profile-badge" id="sellerAccountBadge">SE</div><div><h3 id="sellerAccountName">Seller</h3><p id="sellerAccountEmail">—</p><p>Role: Seller</p></div></div><p class="auth-hint">Seller data, properties and buyer enquiries are stored by the Java server for the academic implementation.</p><button class="primary-btn" id="sellerLogoutBtn2">Logout Seller</button></section>
+  </div></div>
+
+  <!-- Buyer Inbox -->
+  <div class="overlay hidden" id="buyerInboxOverlay"><div class="modal wide"><div class="modal-head"><div><p class="kicker">BUYER INBOX</p><h2>Your seller conversations</h2></div><button class="icon-btn" data-close="buyerInboxOverlay">×</button></div><div class="inquiry-layout"><div id="buyerInquiryList" class="inquiry-list"></div><div id="buyerConversation" class="conversation-panel"><div class="empty">Select an inquiry to open the conversation.</div></div></div></div></div>
+
+  <!-- Profile -->
+  <div class="overlay hidden" id="profileOverlay"><div class="modal auth-modal"><div class="modal-head"><div><p class="kicker">YOUR PROFILE</p><h2 id="profileTitle">Preferences</h2></div><button class="icon-btn" data-close="profileOverlay">×</button></div><div id="profileContent"></div></div></div>
+
+  <!-- Contact / booking -->
+  <div class="overlay hidden" id="workflowOverlay"><div class="modal auth-modal"><div class="modal-head"><div><p class="kicker" id="workflowKicker">BUY / RENT</p><h2 id="workflowTitle">Start your property enquiry</h2></div><button class="icon-btn" data-close="workflowOverlay">×</button></div><form id="workflowForm" class="auth-form"><input id="workflowListingId" type="hidden"><div id="workflowSummary" class="workflow-summary"></div><label>Your name<input id="workflowName" required placeholder="Full name"></label><label>Phone<input id="workflowPhone" required placeholder="10-digit phone number"></label><label>Email<input id="workflowEmail" type="email" required placeholder="you@example.com"></label><label>Preferred date<input id="workflowDate" type="date"></label><label>Message<textarea id="workflowMessage" rows="3" placeholder="Tell the seller what you need..."></textarea></label><div class="workflow-toggle"><button type="button" data-kind="SITE_VISIT" class="active">Schedule site visit</button><button type="button" data-kind="DIRECT_BUY">Direct purchase interest</button><button type="button" data-kind="CONTACT">Contact seller</button></div><button class="primary-btn full" type="submit">Submit enquiry</button><div id="workflowMsg" class="inline-msg"></div></form></div></div>
+
+  <div class="overlay hidden" id="offerOverlay"><div class="modal auth-modal"><div class="modal-head"><div><p class="kicker">NEGOTIATION</p><h2>Make an offer</h2></div><button class="icon-btn" data-close="offerOverlay">×</button></div><form id="offerForm" class="auth-form"><input id="offerListingId" type="hidden"><div id="offerSummary" class="workflow-summary"></div><label>Your offer amount<input id="offerAmount" type="number" min="1" required></label><label>Message<textarea id="offerMessage" rows="3" placeholder="Explain your offer or preferred terms."></textarea></label><button class="primary-btn full" type="submit">Send Offer to Seller</button><div id="offerMsg" class="inline-msg"></div></form></div></div>
+
+  <div class="toast hidden" id="toast"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="/app.js?v=20261002-compare-fix-3"></script>
+</body>
+</html>

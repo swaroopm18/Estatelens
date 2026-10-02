@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: estatelens-jntuk-r23
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/summary
+    envVars:
+      - key: ESTATE_DATA_DIR
+        value: /var/data
+      - key: PYTHON_CMD
+        value: python3
